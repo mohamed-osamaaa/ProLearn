@@ -13,7 +13,8 @@ const sectionSchema = new mongoose.Schema({
 const lectureSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
     },
     description: String,
     sections: [sectionSchema],
