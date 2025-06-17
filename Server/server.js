@@ -7,6 +7,8 @@ import path from 'path';
 
 import connectDB from './config/db.js';
 import authRoute from './routes/Auth/index.js';
+import lectureRoute from './routes/Lecture/index.js';
+import paymentRoute from './routes/payment/index.js';
 
 dotenv.config();
 
@@ -28,7 +30,9 @@ app.use(express.json());
 
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
-app.use("/api/auth", authRoute);
+app.use("/auth", authRoute);
+app.use("/lecture", lectureRoute);
+app.use("/check-out", paymentRoute);
 
 
 
