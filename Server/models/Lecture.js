@@ -26,6 +26,10 @@ const lectureSchema = new mongoose.Schema({
         enum: [1, 2, 3],
         required: true
     },
+    lectureImagePath: {
+        type: String,
+        required: true
+    },
     userProgress: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

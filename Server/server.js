@@ -1,20 +1,37 @@
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import helmet from 'helmet';
+import path from 'path';
 
 import connectDB from './config/db.js';
+import authRoute from './routes/Auth/index.js';
 
 dotenv.config();
-const PORT = process.env.PORT;
+
 const app = express();
+const port = process.env.PORT;
+
 connectDB();
 
+app.use(cookieParser());
+app.use(helmet());
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        credentials: true, // Allow cookies to be sent with requests
+        methods: ["GET", "POST", "PUT", "DELETE"],
+    })
+);
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.send("ProLearn LMS API running");
-});
+app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
+
+app.use("/api/auth", authRoute);
 
 
-app.listen(PORT, () => {
-    console.log(`Server running`);
+
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
