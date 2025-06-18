@@ -5,8 +5,16 @@ const sectionSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    path: {
-        type: String
+    imagePath: {
+        type: String,
+        default: "img1.png",
+    },
+    videoPath: {
+        type: String,
+    },
+    isCompleted: {
+        type: Boolean,
+        default: false
     },
 });
 
@@ -27,9 +35,9 @@ const lectureSchema = new mongoose.Schema({
         enum: [1, 2, 3],
         required: true
     },
-    lectureImagePath: {
-        type: String,
-        required: true
+    isCompleted: {
+        type: Boolean,
+        default: false
     },
     userProgress: [{
         type: mongoose.Schema.Types.ObjectId,
