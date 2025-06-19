@@ -35,7 +35,7 @@ export const register = async (req, res) => {
             password: hashedPassword,
             phone,
             address,
-            role: "user",
+            role: "student",
         });
 
         await newUser.save();
