@@ -59,21 +59,21 @@ router.post("/byLevel", getLecturesByLevel);
 router.get("/:id", verifyToken, getLectureById);
 router.get("/section/:sectionId", verifyToken, getSectionById);
 router.get("/purchased/:userId", verifyToken, getPurchasedLectures);
-router.post("/create", verifyToken, allow("admin"),
+router.post("/create", verifyToken, allow("instructor"),
     upload.fields([
         { name: "image", maxCount: 1 },
         { name: "video", maxCount: 1 },
     ]),
     createLecture);
-router.patch("/update", verifyToken, allow("admin"), updateLecture);
-router.delete("/delete", verifyToken, allow("admin"), deleteLecture);
-router.delete("/section/delete", verifyToken, allow("admin"), deleteSection);
+router.patch("/update", verifyToken, allow("instructor"), updateLecture);
+router.delete("/delete", verifyToken, allow("instructor"), deleteLecture);
+router.delete("/section/delete", verifyToken, allow("instructor"), deleteSection);
 router.get("/level/1", getLevelOneLectures);
 router.get("/level/2", getLevelTwoLectures);
 router.get("/level/3", getLevelThreeLectures);
-router.patch("/section/complete", verifyToken, markSectionCompleted);
-router.post("/check/completed", verifyToken, checkLectureCompleted);
-router.post("/users/progress", verifyToken, getLectureUsersAndProgress);
+router.patch("/section/complete", verifyToken, allow("instructor"), markSectionCompleted);
+router.post("/check/completed", verifyToken, allow("instructor"), checkLectureCompleted);
+router.post("/users/progress", verifyToken, allow("instructor"), getLectureUsersAndProgress);
 
 
 export default router;

@@ -1,6 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
+  @apply bg-[#F5F7FA] min-w-[320px] min-h-screen;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #F5F7FA;
-  min-width: 320px;
-  min-height: 100vh;
 }
