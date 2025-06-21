@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
 
 function Header() {
+    const navigate = useNavigate();
+
     const { user, logout } = useAuthStore();
     const [isScrolled, setIsScrolled] = useState(false);
+
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -38,7 +46,7 @@ function Header() {
                         <span>Lectures</span>
                     </Link>
                     <button
-                        onClick={logout}
+                        onClick={handleLogout}
                         className='w-full py-3 text-white font-bold rounded transition border border-white cursor-pointer px-3'
                     >
                         Log out
