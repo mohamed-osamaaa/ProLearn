@@ -1,5 +1,6 @@
 import React from 'react';
 import level1 from "../../src/assets/level1.png"
+import { useNavigate } from 'react-router-dom';
 
 const levels = [
     {
@@ -20,6 +21,11 @@ const levels = [
 ];
 
 function Levels() {
+    const navigate = useNavigate();
+
+    const handleLevelClick = (level) => {
+        navigate(`/level/${level}`);
+    };
     return (
         <div id="levels" className="flex flex-col items-center my-20">
             <h1 className="text-4xl font-bold mb-20">Choose Your Level</h1>
@@ -27,6 +33,7 @@ function Levels() {
                 {levels.map((lvl) => (
                     <button
                         key={lvl.level}
+                        onClick={() => handleLevelClick(lvl.level)}
                         className="flex flex-col items-center bg-[#23244d] border-2 border-blue-400 rounded-lg shadow-lg px-8 py-6 hover:bg-blue-600 transition duration-300 w-[450px] h-[400px]"
                     >
                         <img
