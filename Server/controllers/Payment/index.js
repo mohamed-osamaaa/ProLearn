@@ -47,7 +47,7 @@ export const createLectureCheckoutSession = async (req, res) => {
                 },
                 quantity: 1,
             }],
-            success_url: `${process.env.CLIENT_URL}/check-out/success`,
+            success_url: `${process.env.CLIENT_URL}/lectures/${lectureId}`,
             cancel_url: `${process.env.CLIENT_URL}/`,
             metadata: {
                 userId,

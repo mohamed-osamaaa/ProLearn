@@ -101,12 +101,20 @@ export const createLecture = async (req, res) => {
             name: sectionName,
         };
 
+        // if (req.files?.image?.[0]) {
+        //     section.imagePath = req.files.image[0].path;
+        // }
+
+        // if (req.files?.video?.[0]) {
+        //     section.videoPath = req.files.video[0].path;
+        // }
+
         if (req.files?.image?.[0]) {
-            section.imagePath = req.files.image[0].path;
+            section.imagePath = req.files.image[0].path.replace(/\\/g, "/");
         }
 
         if (req.files?.video?.[0]) {
-            section.videoPath = req.files.video[0].path;
+            section.videoPath = req.files.video[0].path.replace(/\\/g, "/");
         }
 
         if (sectionName && (section.imagePath || section.videoPath)) {
@@ -115,12 +123,57 @@ export const createLecture = async (req, res) => {
 
         await lecture.save();
 
+        if (price == 0 && req.currentUser?.id) {
+            await User.findByIdAndUpdate(req.currentUser.id, {
+                $addToSet: { purchasedLectures: lecture._id }
+            });
+        }
+
         res.status(201).json({
             success: true,
             message: "Lecture with initial section created successfully",
             lecture,
         });
     } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const createSection = async (req, res) => {
+    try {
+        const { lectureId, name } = req.body;
+
+        if (!name || !lectureId) {
+            return res.status(400).json({ success: false, message: "Section name and lectureId are required" });
+        }
+
+        const lecture = await Lecture.findById(lectureId);
+        if (!lecture) {
+            return res.status(404).json({ success: false, message: "Lecture not found" });
+        }
+
+        const newSection = {
+            name,
+        };
+
+        if (req.files?.image?.[0]) {
+            newSection.imagePath = req.files.image[0].path.replace(/\\/g, "/");
+        }
+
+        if (req.files?.video?.[0]) {
+            newSection.videoPath = req.files.video[0].path.replace(/\\/g, "/");
+        }
+
+        lecture.sections.push(newSection);
+        await lecture.save();
+
+        res.status(201).json({
+            success: true,
+            message: "Section added successfully",
+            section: lecture.sections[lecture.sections.length - 1], // return the newly added section
+        });
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ success: false, message: error.message });
     }
 };

@@ -11,6 +11,9 @@ import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import Register from './pages/Register';
 import useAuthStore from './store/useAuthStore';
+import Level from './pages/Level';
+import LectureDetailPage from './pages/LectureDetailPage';
+import MyCourses from './pages/MyCourses';
 
 function App() {
   const { checkAuth, user } = useAuthStore();
@@ -28,6 +31,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/level/:level" element={<Level />} />
+        <Route path="/lectures/:lectureId" element={<LectureDetailPage />} />
+        <Route path="/myLectures" element={<MyCourses />} />
       </Routes>
     </>
   );

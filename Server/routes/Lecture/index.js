@@ -1,10 +1,12 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 
 import {
     checkLectureCompleted,
     createLecture,
+    createSection,
     deleteLecture,
     deleteSection,
     getLectureById,
@@ -23,11 +25,17 @@ import verifyToken from '../../middlewares/verifyToken.js';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const fileType = file.mimetype.split("/")[0];
-        if (fileType === "image") {
-            cb(null, "uploads/images");
-        } else if (fileType === "video") {
-            cb(null, "uploads/videos");
+        const ext = path.extname(file.originalname).toLowerCase();
+        const videoExts = ['.mp4', '.mov', '.avi'];
+        const imageExts = ['.jpg', '.jpeg', '.png'];
+        if (imageExts.includes(ext)) {
+            const dir = "uploads/images";
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            cb(null, dir);
+        } else if (videoExts.includes(ext)) {
+            const dir = "uploads/videos";
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            cb(null, dir);
         } else {
             cb(new Error("Unsupported file type"), false);
         }
@@ -40,9 +48,10 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ["image", "video"];
-    const fileType = file.mimetype.split("/")[0];
-    if (allowedTypes.includes(fileType)) {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const videoExts = ['.mp4', '.mov', '.avi'];
+    const imageExts = ['.jpg', '.jpeg', '.png'];
+    if (imageExts.includes(ext) || videoExts.includes(ext)) {
         cb(null, true);
     } else {
         cb(new Error("Only images and videos are allowed"), false);
@@ -65,6 +74,12 @@ router.post("/create", verifyToken, allow("instructor"),
         { name: "video", maxCount: 1 },
     ]),
     createLecture);
+router.post("/create/section", verifyToken, allow("instructor"),
+    upload.fields([
+        { name: "image", maxCount: 1 },
+        { name: "video", maxCount: 1 },
+    ]),
+    createSection);
 router.patch("/update", verifyToken, allow("instructor"), updateLecture);
 router.delete("/delete", verifyToken, allow("instructor"), deleteLecture);
 router.delete("/section/delete", verifyToken, allow("instructor"), deleteSection);

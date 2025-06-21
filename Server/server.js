@@ -23,7 +23,7 @@ app.use(
     cors({
         origin: process.env.CLIENT_URL,
         credentials: true, // Allow cookies to be sent with requests
-        methods: ["GET", "POST", "PUT", "DELETE"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     })
 );
 app.use(express.json());
@@ -31,8 +31,8 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
 app.use("/auth", authRoute);
-app.use("/lecture", lectureRoute);
-app.use("/check-out", paymentRoute);
+app.use("/lectures", lectureRoute);
+app.use("/payment", paymentRoute);
 
 
 
