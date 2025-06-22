@@ -43,7 +43,7 @@ ProLearn/
 │   ├── models/           # Mongoose schemas (Lecture, Section, User, etc.)
 │   ├── routes/           # Route handlers
 │   ├── controllers/      # Logic for routes
-│   └── utils/            # Middleware (auth, file upload, etc.)
+│   └── utils/            # Middleware (auth, etc.)
 │   └── ...
 └── README.md
 ```
