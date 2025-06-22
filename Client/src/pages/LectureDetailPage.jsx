@@ -186,7 +186,7 @@ const LectureDetailPage = () => {
                                                                 const result = await markSectionCompleted(lecture._id, section._id);
                                                                 if (result) getLectureById(lecture._id); // Refresh lecture to update UI
                                                             }}
-                                                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                                                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition cursor-pointer"
                                                         >
                                                             ✅ Mark as Completed
                                                         </button>

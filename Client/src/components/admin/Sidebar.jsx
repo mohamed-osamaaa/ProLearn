@@ -1,6 +1,6 @@
 import React from 'react';
-import { Users, BookOpen, BarChart3, Settings, LogOut, Search, Plus, Trash2, Edit } from 'lucide-react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Users, BookOpen, BarChart3, LogOut } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
 
 

@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const sectionSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
         unique: true
     },
     imagePath: {
@@ -22,7 +21,6 @@ const sectionSchema = new mongoose.Schema({
 const lectureSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
         unique: true,
     },
     description: String,
@@ -33,8 +31,7 @@ const lectureSchema = new mongoose.Schema({
     },
     level: {
         type: Number,
-        enum: [1, 2, 3],
-        required: true
+        enum: [1, 2, 3]
     },
     isCompleted: {
         type: Boolean,
