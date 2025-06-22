@@ -30,7 +30,6 @@ export const createLectureCheckoutSession = async (req, res) => {
             });
         } else {
             console.log("not found seccion id");
-
         }
 
         const { lectureId } = req.body;

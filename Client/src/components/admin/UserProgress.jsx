@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, BookOpen, BarChart3, Settings, LogOut, Search, Plus, Trash2, Edit } from 'lucide-react';
+import { Users, BookOpen, BarChart3, Settings, Search } from 'lucide-react';
 import useLectureStore from '../../store/useLectureStore';
 
 const UserProgress = () => {
@@ -66,7 +66,7 @@ const UserProgress = () => {
             </div>
 
             {/* No Results Message */}
-            {progressData === null && lectureName && !loading && !error && (
+            {/* {progressData === null && lectureName && !loading && !error && (
                 <div className="bg-white rounded-lg shadow p-6 text-center">
                     <div className="text-gray-500">
                         <BookOpen size={48} className="mx-auto mb-4 text-gray-300" />
@@ -74,7 +74,7 @@ const UserProgress = () => {
                         <p className="text-sm">Try searching for a different lecture name.</p>
                     </div>
                 </div>
-            )}
+            )} */}
 
             {/* Results Section */}
             {progressData && (

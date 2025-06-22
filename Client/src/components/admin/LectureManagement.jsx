@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Swal from 'sweetalert2';
 import { Plus, Trash2, Edit, X, Eye, BookOpen } from 'lucide-react';
 import useLectureStore from '../../store/useLectureStore';
 
@@ -13,6 +12,10 @@ const LectureManagement = () => {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedLevel, setSelectedLevel] = useState('all');
+    const [showDeleteSectionModal, setShowDeleteSectionModal] = useState(false);
+    const [sectionToDelete, setSectionToDelete] = useState(null);
+    const [deletingSection, setDeletingSection] = useState(false);
+
 
     const {
         lectures,
@@ -46,13 +49,26 @@ const LectureManagement = () => {
         fetchLectures();
     }, [selectedLevel]);
 
+    // const fetchLectures = async () => {
+    //     if (selectedLevel === 'all') {
+    //         await getAllLectures();
+    //     } else {
+    //         await getLecturesByLevel(parseInt(selectedLevel));
+    //     }
+    // };
+
     const fetchLectures = async () => {
-        if (selectedLevel === 'all') {
-            await getAllLectures();
-        } else {
-            await getLecturesByLevel(parseInt(selectedLevel));
+        try {
+            if (selectedLevel === 'all') {
+                await getAllLectures();
+            } else {
+                await getLecturesByLevel(parseInt(selectedLevel));
+            }
+        } catch (error) {
+            console.error('Failed to fetch lectures:', error);
         }
     };
+
 
     const handleCreateLecture = async (e) => {
         e.preventDefault();
@@ -103,27 +119,43 @@ const LectureManagement = () => {
     };
 
 
-    const handleDeleteSection = async (sectionId) => {
-        const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: 'This action will delete the section permanently!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!',
-        });
+    // const handleDeleteSection = async (sectionId) => {
+    //     const result = await Swal.fire({
+    //         title: 'Are you sure?',
+    //         text: 'This action will delete the section permanently!',
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#d33',
+    //         cancelButtonColor: '#3085d6',
+    //         confirmButtonText: 'Yes, delete it!',
+    //     });
 
-        if (result.isConfirmed) {
-            const success = await deleteSection(sectionId);
-            if (success) {
-                fetchLectures();
-                Swal.fire('Deleted!', 'The section has been deleted.', 'success');
-            } else {
-                Swal.fire('Error', 'Something went wrong while deleting.', 'error');
-            }
+    //     if (result.isConfirmed) {
+    //         const success = await deleteSection(sectionId);
+    //         if (success) {
+    //             fetchLectures();
+    //             Swal.fire('Deleted!', 'The section has been deleted.', 'success');
+    //         } else {
+    //             Swal.fire('Error', 'Something went wrong while deleting.', 'error');
+    //         }
+    //     }
+    // };
+
+    const confirmDeleteSection = async () => {
+        if (!sectionToDelete?._id) return;
+        setDeletingSection(true);
+        const success = await deleteSection(sectionToDelete._id);
+        setDeletingSection(false);
+        setShowDeleteSectionModal(false);
+        if (success) {
+            setSelectedLecture(prev => ({
+                ...prev,
+                sections: prev.sections.filter(section => section._id !== sectionToDelete._id)
+            }));
+            fetchLectures();
         }
     };
+
 
     const resetLectureForm = () => {
         setLectureForm({
@@ -504,7 +536,7 @@ const LectureManagement = () => {
                             <h3 className="text-lg font-semibold">
                                 Add Section to "{selectedLecture?.name}"
                             </h3>
-                            <button onClick={() => setShowSectionModal(false)}>
+                            <button onClick={() => setShowSectionModal(false)} className='cursor-pointer'>
                                 <X size={20} />
                             </button>
                         </div>
@@ -608,7 +640,10 @@ const LectureManagement = () => {
                                                 </div>
                                             </div>
                                             <button
-                                                onClick={() => handleDeleteSection(section._id)}
+                                                onClick={() => {
+                                                    setSectionToDelete(section);
+                                                    setShowDeleteSectionModal(true);
+                                                }}
                                                 className="text-red-600 hover:text-red-900 ml-4 cursor-pointer"
                                                 title="Delete Section"
                                             >
@@ -636,33 +671,69 @@ const LectureManagement = () => {
                         )}
                     </div>
                 </div>
-            )}
+            )
+            }
 
             {/* Delete Confirmation Modal */}
-            {showDeleteModal && (
+            {
+                showDeleteModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-semibold">Confirm Delete</h3>
+                                <button onClick={() => setShowDeleteModal(false)} className='cursor-pointer'>
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <p className="text-gray-600 mb-6">
+                                Are you sure you want to delete "{deleteTarget?.name}"? This action cannot be undone and will also delete all associated sections.
+                            </p>
+
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleDeleteLecture}
+                                    disabled={loading}
+                                    className="flex-1 bg-red-600 text-white py-2 rounded-md hover:bg-red-700 disabled:opacity-50 cursor-pointer"
+                                >
+                                    {loading ? 'Deleting...' : 'Delete'}
+                                </button>
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400 cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {showDeleteSectionModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold">Confirm Delete</h3>
-                            <button onClick={() => setShowDeleteModal(false)} className='cursor-pointer'>
+                            <h3 className="text-lg font-semibold">Confirm Section Deletion</h3>
+                            <button onClick={() => setShowDeleteSectionModal(false)} className='cursor-pointer'>
                                 <X size={20} />
                             </button>
                         </div>
 
                         <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete "{deleteTarget?.name}"? This action cannot be undone and will also delete all associated sections.
+                            Are you sure you want to delete the section "{sectionToDelete?.name}"? This action cannot be undone.
                         </p>
 
                         <div className="flex gap-2">
                             <button
-                                onClick={handleDeleteLecture}
-                                disabled={loading}
+                                onClick={confirmDeleteSection}
+                                disabled={deletingSection}
                                 className="flex-1 bg-red-600 text-white py-2 rounded-md hover:bg-red-700 disabled:opacity-50 cursor-pointer"
                             >
-                                {loading ? 'Deleting...' : 'Delete'}
+                                {deletingSection ? 'Deleting...' : 'Delete'}
                             </button>
                             <button
-                                onClick={() => setShowDeleteModal(false)}
+                                onClick={() => setShowDeleteSectionModal(false)}
                                 className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400 cursor-pointer"
                             >
                                 Cancel
@@ -671,7 +742,8 @@ const LectureManagement = () => {
                     </div>
                 </div>
             )}
-        </div>
+
+        </div >
     );
 };
 

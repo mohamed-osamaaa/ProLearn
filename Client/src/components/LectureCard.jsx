@@ -24,10 +24,10 @@ function LectureCard({ lecture }) {
         // stopPropagation prevents the click event from reaching the card.
         // This helps avoid accidentally opening the lecture details when clicking the purchase button.
         e.stopPropagation();// Prevents the click event from bubbling up to parent elements (e.g., LectureCard onClick)
-        // if (!user) {
-        //     navigate('/login');
-        //     return;
-        // }
+        if (!user) {
+            navigate('/login');
+            return;
+        }
         if (isFree || isPurchased) {
             navigate(`/lectures/${lecture._id}`);
         } else {

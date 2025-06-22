@@ -8,7 +8,7 @@ export const getLecturesByLevel = async (req, res) => {
             return res.status(400).json({ message: "Invalid level" });
         }
 
-        const lectures = await Lecture.find({ level });
+        const lectures = await Lecture.find({ level }, { "sections.videoPath": 0 });
         res.json(lectures);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -245,7 +245,7 @@ export const deleteSection = async (req, res) => {
 
 export const getLevelOneLectures = async (req, res) => {
     try {
-        const lectures = await Lecture.find({ level: 1 });
+        const lectures = await Lecture.find({ level: 1 }, { "sections.videoPath": 0 });
         res.json({ success: true, lectures });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -255,7 +255,7 @@ export const getLevelOneLectures = async (req, res) => {
 
 export const getLevelTwoLectures = async (req, res) => {
     try {
-        const lectures = await Lecture.find({ level: 2 });
+        const lectures = await Lecture.find({ level: 2 }, { "sections.videoPath": 0 });
         res.json({ success: true, lectures });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -265,7 +265,7 @@ export const getLevelTwoLectures = async (req, res) => {
 
 export const getLevelThreeLectures = async (req, res) => {
     try {
-        const lectures = await Lecture.find({ level: 3 });
+        const lectures = await Lecture.find({ level: 3 }, { "sections.videoPath": 0 });
         res.json({ success: true, lectures });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -274,7 +274,7 @@ export const getLevelThreeLectures = async (req, res) => {
 
 export const getAllLectures = async (req, res) => {
     try {
-        const lectures = await Lecture.find();
+        const lectures = await Lecture.find({}, { "sections.videoPath": 0 });
         res.json({ success: true, lectures });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
