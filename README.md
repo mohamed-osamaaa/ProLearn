@@ -53,7 +53,7 @@ ProLearn/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/ProLearn.git
+git clone https://github.com/mohamed-osamaaa/ProLearn.git
 cd ProLearn
 ```
 
