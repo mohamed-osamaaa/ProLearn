@@ -18,7 +18,11 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const res = await login(email, password);
-        if (res)
+        console.log(res.role);
+        if (!res) return;
+        if (res.role === "instructor")
+            navigate('/admin');
+        else
             navigate('/');
     };
 

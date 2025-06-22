@@ -9,6 +9,7 @@ import {
     createSection,
     deleteLecture,
     deleteSection,
+    getAllLectures,
     getLectureById,
     getLecturesByLevel,
     getLectureUsersAndProgress,
@@ -86,8 +87,9 @@ router.delete("/section/delete", verifyToken, allow("instructor"), deleteSection
 router.get("/level/1", getLevelOneLectures);
 router.get("/level/2", getLevelTwoLectures);
 router.get("/level/3", getLevelThreeLectures);
-router.patch("/section/complete", verifyToken, allow("instructor"), markSectionCompleted);
-router.post("/check/completed", verifyToken, allow("instructor"), checkLectureCompleted);
+router.get("/level/all", getAllLectures);
+router.patch("/section/complete", verifyToken, markSectionCompleted);
+router.post("/check/completed", verifyToken, checkLectureCompleted);
 router.post("/users/progress", verifyToken, allow("instructor"), getLectureUsersAndProgress);
 
 

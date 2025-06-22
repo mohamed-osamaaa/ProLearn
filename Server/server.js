@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 
 import connectDB from './config/db.js';
@@ -16,6 +17,18 @@ const app = express();
 const port = process.env.PORT;
 
 connectDB();
+
+// Apply global rate limiter (e.g., 100 requests per 5 minutes)
+const limiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: {
+        status: 429,
+        message: "Too many requests, please try again later.",
+    },
+});
+
+app.use(limiter); // Apply the rate limiter to all routes
 
 app.use(cookieParser());
 app.use(helmet());

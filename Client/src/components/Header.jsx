@@ -8,7 +8,6 @@ function Header() {
     const { user, logout } = useAuthStore();
     const [isScrolled, setIsScrolled] = useState(false);
 
-
     const handleLogout = async () => {
         await logout();
         navigate('/');
@@ -29,7 +28,7 @@ function Header() {
 
     return (
         <div
-            className={`flex justify-between items-center fixed h-[90px] text-white w-full px-20 z-50 transition-all duration-300 ${isScrolled
+            className={`flex justify-between items-center flex-wrap fixed h-[90px] text-white w-full px-5 md:px-20 z-50 transition-all duration-300 ${isScrolled
                 ? 'bg-[#1C1E53]/80 backdrop-blur-md'
                 : 'bg-[#1C1E53]'
                 }`}
@@ -37,36 +36,36 @@ function Header() {
             <h1 className='text-3xl font-bold'>ProLearn</h1>
 
             {user ? (
-                <div className='flex gap-20 items-center'>
+                <div className='flex flex-wrap gap-2 md:gap-20 items-center mt-1 md:mt-0'>
                     <Link
                         to="/myLectures"
-                        className="w-full py-3 text-white font-bold rounded transition flex space-x-2 justify-center items-center px-3"
+                        className="py-2 md:py-3 text-white font-bold rounded transition flex space-x-1 justify-center items-center px-3"
                     >
-                        <span>My</span>
+                        <span>my</span>
                         <span>Lectures</span>
                     </Link>
                     <button
                         onClick={handleLogout}
-                        className='w-full py-3 text-white font-bold rounded transition border border-white cursor-pointer px-3'
+                        className='py-2 md:py-3 text-white font-bold rounded transition border border-white cursor-pointer px-3'
                     >
                         Log out
                     </button>
                 </div>
             ) : (
-                <div className='flex gap-10 items-center'>
+                <div className='flex flex-wrap gap-2 md:gap-10 items-center mt-0'>
                     <Link
                         to="/login"
-                        className='w-full py-3 text-white font-bold rounded transition border border-white px-3'
+                        className='py-2 md:py-3 text-white font-bold rounded transition border border-white px-3'
                     >
                         Login
                     </Link>
                     <Link
                         to="/register"
-                        className='w-full py-3 text-white font-bold rounded transition border border-white px-3'
+                        className='py-2 md:py-3 text-white font-bold rounded transition border border-white px-3'
                     >
                         Register
                     </Link>
-                    <div className='flex gap-20 items-center'></div>
+                    <div className='flex gap-10 md:gap-20 items-center'></div>
                 </div>
             )}
         </div>

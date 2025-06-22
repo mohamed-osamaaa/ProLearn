@@ -14,9 +14,11 @@ import useAuthStore from './store/useAuthStore';
 import Level from './pages/Level';
 import LectureDetailPage from './pages/LectureDetailPage';
 import MyCourses from './pages/MyCourses';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  const { checkAuth, user } = useAuthStore();
+  const { checkAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -27,13 +29,23 @@ function App() {
     <>
       <Toaster position="top-right" reverseOrder={false} />
       <Routes>
+
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="*" element={<NotFound />} />
         <Route path="/level/:level" element={<Level />} />
         <Route path="/lectures/:lectureId" element={<LectureDetailPage />} />
-        <Route path="/myLectures" element={<MyCourses />} />
+        <Route path="*" element={<NotFound />} />
+
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/myLectures" element={<MyCourses />} />
+        </Route>
+
+
+        <Route element={<ProtectedRoute allowedRoles={['instructor']} />}>
+          <Route path="/admin/*" element={<AdminDashboard />} />
+        </Route>
       </Routes>
     </>
   );

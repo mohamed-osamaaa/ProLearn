@@ -202,10 +202,12 @@ export const updateLecture = async (req, res) => {
 
 export const deleteLecture = async (req, res) => {
     try {
-        const deleted = await Lecture.findByIdAndDelete(req.body.id);
+        const deleted = await Lecture.findOneAndDelete({ name: req.body.name });
+
         if (!deleted) {
             return res.status(404).json({ success: false, message: "Lecture not found" });
         }
+
         res.json({ success: true, message: "Lecture deleted" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -213,16 +215,25 @@ export const deleteLecture = async (req, res) => {
 };
 
 
+// Controller
 export const deleteSection = async (req, res) => {
     try {
-        const lecture = await Lecture.findById(req.body.lectureId);
+        const { sectionId } = req.body;
+
+        const lecture = await Lecture.findOne({ "sections._id": sectionId });
+
         if (!lecture) {
             return res.status(404).json({ success: false, message: "Lecture not found" });
         }
 
+        const initialCount = lecture.sections.length;
         lecture.sections = lecture.sections.filter(
-            section => section._id.toString() !== req.params.sectionId
+            section => section._id.toString() !== sectionId
         );
+
+        if (lecture.sections.length === initialCount) {
+            return res.status(404).json({ success: false, message: "Section not found" });
+        }
 
         await lecture.save();
         res.json({ success: true, message: "Section deleted" });
@@ -261,6 +272,14 @@ export const getLevelThreeLectures = async (req, res) => {
     }
 };
 
+export const getAllLectures = async (req, res) => {
+    try {
+        const lectures = await Lecture.find();
+        res.json({ success: true, lectures });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 
 export const markSectionCompleted = async (req, res) => {
     try {
@@ -325,15 +344,15 @@ export const checkLectureCompleted = async (req, res) => {
 
 export const getLectureUsersAndProgress = async (req, res) => {
     try {
-        const { lectureId } = req.body;
+        const { lectureName } = req.body;
 
-        const lecture = await Lecture.findById(lectureId).populate("userProgress", "name email");
+        const lecture = await Lecture.findOne({ name: lectureName }).populate("userProgress", "name email");
 
         if (!lecture) {
             return res.status(404).json({ success: false, message: "Lecture not found" });
         }
 
-        const usersPurchased = await User.find({ purchasedLectures: lectureId }).select("name email");
+        const usersPurchased = await User.find({ purchasedLectures: lecture._id }).select("name email");
 
         const usersCompleted = lecture.userProgress;
 
