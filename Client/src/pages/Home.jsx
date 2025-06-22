@@ -8,9 +8,9 @@ function Home() {
     return (
         <div>
             <Header />
-            <div className='flex flex-col items-center justify-center h-screen bg-[#1C1E53] text-white'>
-                <h1 className='text-5xl font-bold mb-4'>Welcome to ProLearn</h1>
-                <p className='text-xl mb-8'>Your journey to mastering new skills starts here.</p>
+            <div className='flex flex-col items-center justify-center min-h-screen bg-[#1C1E53] text-white px-4 text-center'>
+                <h1 className='text-4xl sm:text-5xl font-bold mb-4'>Welcome to ProLearn</h1>
+                <p className='text-lg sm:text-xl mb-8'>Your journey to mastering new skills starts here.</p>
                 <button
                     onClick={() => {
                         const element = document.getElementById('levels');
@@ -20,7 +20,7 @@ function Home() {
                             window.scrollTo({ top: y, behavior: 'smooth' });
                         }
                     }}
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition duration-300"
+                    className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition duration-300 cursor-pointer"
                 >
                     Get Started
                 </button>

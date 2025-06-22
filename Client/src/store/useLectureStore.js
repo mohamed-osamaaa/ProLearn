@@ -68,6 +68,20 @@ const useLectureStore = create((set, get) => ({
         }
     },
 
+    getAllLectures: async () => {
+        set({ loading: true, error: null });
+        try {
+            const res = await axiosInstance.get('/lectures/level/all');
+            set({ lectures: res.data.lectures, loading: false });
+            return res.data;
+        } catch (error) {
+            const message = error?.response?.data?.message || "Failed to fetch all lectures";
+            set({ error: message, loading: false });
+            toast.error(message);
+            return false;
+        }
+    },
+
     getLectureById: async (lectureId) => {
         set({ loading: true, error: null });
         try {
@@ -226,18 +240,18 @@ const useLectureStore = create((set, get) => ({
     },
 
 
-    deleteLecture: async (lectureId) => {
+    deleteLecture: async (lectureName) => {
         set({ loading: true, error: null });
         try {
             const res = await axiosInstance.delete('/lectures/delete', {
-                data: { id: lectureId }
+                data: { name: lectureName }
             });
+
             set({ loading: false });
             toast.success(res.data.message || "Lecture deleted successfully");
 
-
             const { lectures } = get();
-            const filteredLectures = lectures.filter(lecture => lecture._id !== lectureId);
+            const filteredLectures = lectures.filter(lecture => lecture.name !== lectureName);
             set({ lectures: filteredLectures });
 
             return true;
@@ -250,22 +264,18 @@ const useLectureStore = create((set, get) => ({
     },
 
 
-    deleteSection: async (lectureId) => {
-        set({ loading: true, error: null });
+    deleteSection: async (sectionId) => {
         try {
             const res = await axiosInstance.delete('/lectures/section/delete', {
-                data: { lectureId }
+                data: { sectionId }
             });
-            set({ loading: false });
-            toast.success(res.data.message || "Section deleted successfully");
-            return true;
+            return res.data.success;
         } catch (error) {
-            const message = error?.response?.data?.message || "Failed to delete section";
-            set({ error: message, loading: false });
-            toast.error(message);
+            toast.error(error?.response?.data?.message || "Failed to delete section");
             return false;
         }
     },
+
 
 
     markSectionCompleted: async (lectureId, sectionId) => {
@@ -304,11 +314,11 @@ const useLectureStore = create((set, get) => ({
     },
 
 
-    getLectureUsersAndProgress: async (lectureId) => {
+    getLectureUsersAndProgress: async (lectureName) => {
         set({ loading: true, error: null });
         try {
             const res = await axiosInstance.post('/lectures/users/progress', {
-                lectureId
+                lectureName
             });
             set({ loading: false });
             return res.data;
@@ -324,7 +334,7 @@ const useLectureStore = create((set, get) => ({
     createLectureCheckout: async (lectureId) => {
         set({ loading: true, error: null });
         try {
-            const res = await axiosInstance.post('/payment', { lectureId });
+            const res = await axiosInstance.post('/payment/create-checkout-session', { lectureId });
             set({ loading: false });
 
 
@@ -335,29 +345,6 @@ const useLectureStore = create((set, get) => ({
             return res.data;
         } catch (error) {
             const message = error?.response?.data?.message || "Failed to create checkout session";
-            set({ error: message, loading: false });
-            toast.error(message);
-            return false;
-        }
-    },
-
-
-    handlePaymentSuccess: async (sessionId) => {
-        set({ loading: true, error: null });
-        try {
-            const res = await axiosInstance.post(`/payment?session_id=${sessionId}`);
-            set({ loading: false });
-            toast.success(res.data.message || "Lecture purchased successfully");
-
-            // Refresh purchased lectures
-            const userId = res.data.userId;
-            if (userId) {
-                get().getPurchasedLectures(userId);
-            }
-
-            return res.data;
-        } catch (error) {
-            const message = error?.response?.data?.message || "Failed to process payment";
             set({ error: message, loading: false });
             toast.error(message);
             return false;

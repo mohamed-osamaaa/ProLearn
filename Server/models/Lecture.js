@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const sectionSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     imagePath: {
         type: String,

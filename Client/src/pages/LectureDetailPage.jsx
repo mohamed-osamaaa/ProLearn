@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import useLectureStore from '../store/useLectureStore';
 import Header from '../components/Header';
 import { FiArrowLeft } from 'react-icons/fi';
+import { axiosInstance } from '../lib/axios';
+import toast from 'react-hot-toast';
+import useAuthStore from '../store/useAuthStore';
 
 const LectureDetailPage = () => {
     const { lectureId } = useParams();
     const navigate = useNavigate();
     const [activeSectionId, setActiveSectionId] = useState(null);
+    const { checkAuth } = useAuthStore();
 
     const {
         currentLecture: lecture,
@@ -18,6 +22,38 @@ const LectureDetailPage = () => {
     } = useLectureStore();
 
     const BASE_URL = import.meta.env.VITE_SERVER_URL;
+
+    const location = useLocation();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const sessionId = params.get('session_id');
+
+        if (sessionId) {
+            console.log("Verifying Stripe session:", sessionId);
+
+            axiosInstance
+                .get(`/payment/create-checkout-session?session_id=${sessionId}`)
+                .then(res => {
+                    console.log("Purchase success:", res.data.message);
+                    toast.success(res.data.message || "Lecture added to your purchases!");
+
+
+                    checkAuth();
+                    getLectureById(lectureId);
+
+                    const cleanURL = location.pathname;
+                    window.history.replaceState(null, '', cleanURL);
+                })
+                .catch(err => {
+                    const msg = err.response?.data?.message || "Failed to verify payment";
+                    console.error("Stripe verify error:", msg);
+                    toast.error(msg);
+                });
+        } else {
+            getLectureById(lectureId);
+        }
+    }, [location]);
 
     useEffect(() => {
         if (lectureId) getLectureById(lectureId);
@@ -37,8 +73,8 @@ const LectureDetailPage = () => {
                 <h2 className="text-xl font-semibold text-red-600 mb-2">Lecture Not Found</h2>
                 <p className="text-gray-500">{error || 'No lecture data available.'}</p>
                 <button
-                    onClick={() => navigate(-1)}
-                    className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    onClick={() => navigate('/')}
+                    className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
                 >
                     Go Back
                 </button>
@@ -63,7 +99,7 @@ const LectureDetailPage = () => {
                 <div className="relative">
                     <button
                         onClick={() => navigate(-1)}
-                        className="absolute top-4 left-[-180px] bg-[#1E3A8A] text-white font-semibold px-4 py-2 rounded border border-white flex items-center gap-2 hover:bg-blue-800 transition duration-200 w-fit"
+                        className="absolute top-4 left-[-180px] bg-[#1E3A8A] text-white font-semibold px-4 py-2 rounded border border-white flex items-center gap-2 hover:bg-blue-800 transition duration-200 w-fit cursor-pointer"
                     >
                         <FiArrowLeft size={18} />
                         Back

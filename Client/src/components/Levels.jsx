@@ -29,19 +29,19 @@ function Levels() {
     return (
         <div id="levels" className="flex flex-col items-center my-20">
             <h1 className="text-4xl font-bold mb-20">Choose Your Level</h1>
-            <div className="flex flex-row gap-10">
+            <div className="flex flex-row flex-wrap justify-center gap-10">
                 {levels.map((lvl) => (
                     <button
                         key={lvl.level}
                         onClick={() => handleLevelClick(lvl.level)}
-                        className="flex flex-col items-center bg-[#23244d] border-2 border-blue-400 rounded-lg shadow-lg px-8 py-6 hover:bg-blue-600 transition duration-300 w-[450px] h-[400px]"
+                        className="flex flex-col items-center bg-[#23244d] border-2 border-blue-400 rounded-lg shadow-lg px-8 py-6 hover:bg-blue-600 transition duration-300 w-[300px] sm:w-[350px] md:w-[400px] lg:w-[450px] h-[400px] cursor-pointer"
                     >
                         <img
                             src={lvl.img}
                             alt={lvl.title}
-                            className="mb-10 w-full h-3/4 object-cover"
+                            className="mb-10 w-full h-56 md:h-64 object-cover"
                         />
-                        <h1 className="text-2xl font-semibold text-white">{lvl.title}</h1>
+                        <h1 className="text-2xl mt-5 md:mt-0 font-semibold text-white">{lvl.title}</h1>
                     </button>
                 ))}
             </div>

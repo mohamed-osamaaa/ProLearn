@@ -28,6 +28,9 @@ export const createLectureCheckoutSession = async (req, res) => {
                 message: "Lecture added to your purchases.",
                 lectureId
             });
+        } else {
+            console.log("not found seccion id");
+
         }
 
         const { lectureId } = req.body;
@@ -47,7 +50,8 @@ export const createLectureCheckoutSession = async (req, res) => {
                 },
                 quantity: 1,
             }],
-            success_url: `${process.env.CLIENT_URL}/lectures/${lectureId}`,
+            // success_url: `${process.env.CLIENT_URL}/lectures/${lectureId}`,
+            success_url: `${process.env.CLIENT_URL}/lectures/${lectureId}?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.CLIENT_URL}/`,
             metadata: {
                 userId,

@@ -1,8 +1,9 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+@import "tailwindcss";
 
 body {
-  @apply bg-[#F5F7FA] min-w-[320px] min-h-screen;
+  background-color:  #F5F7FA ;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 }

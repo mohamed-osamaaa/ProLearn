@@ -18,10 +18,11 @@ function MyCourses() {
     } = useLectureStore();
 
     useEffect(() => {
+        console.log("User ID for fetching lectures:", user?.id);
         if (user?.id) {
             getPurchasedLectures(user.id);
         }
-    }, [user]);
+    }, [user.id]);
 
     if (loading) {
         return (
@@ -52,12 +53,12 @@ function MyCourses() {
     return (
         <>
             <Header />
-            <div className="min-h-screen bg-gray-50 py-8 mx-16">
+            <div className="bg-gray-50 py-16 mx-4 md:mx-16">
                 <div className="container mx-auto px-4">
                     <div className="relative">
                         <button
                             onClick={() => navigate(-1)}
-                            className="absolute top-4 left-0 bg-[#1E3A8A] text-white font-semibold px-4 py-2 rounded border border-white flex items-center gap-2 hover:bg-blue-800 transition duration-200 w-fit"
+                            className="absolute -top-12 md:-top-4 -left-[25px] md:left-0 bg-[#1E3A8A] text-white font-semibold px-4 py-2 rounded border border-white flex items-center gap-2 hover:bg-blue-800 transition duration-200 w-fit cursor-pointer"
                         >
                             <FiArrowLeft size={18} />
                             Back
