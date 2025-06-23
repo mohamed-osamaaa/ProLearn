@@ -11,6 +11,8 @@ const LectureDetailPage = () => {
     const { lectureId } = useParams();
     const navigate = useNavigate();
     const [activeSectionId, setActiveSectionId] = useState(null);
+    const [completedSectionIds, setCompletedSectionIds] = useState([]);
+
     const { checkAuth } = useAuthStore();
 
     const {
@@ -24,6 +26,20 @@ const LectureDetailPage = () => {
     const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
     const location = useLocation();
+
+    useEffect(() => {
+        const fetchProgress = async () => {
+            if (!lectureId) return;
+            try {
+                const res = await axiosInstance.get(`/lectures/progress/${lectureId}`);
+                setCompletedSectionIds(res.data.completedSections || []);
+            } catch (error) {
+                console.error("Failed to fetch progress:", error);
+            }
+        };
+
+        fetchProgress();
+    }, [lectureId]);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -159,8 +175,8 @@ const LectureDetailPage = () => {
                                                     {i + 1}. {section.name}
                                                 </h3>
                                                 <div className="flex items-center gap-4 text-sm text-gray-600">
-                                                    <span className={section.isCompleted ? 'text-green-600' : 'text-red-500'}>
-                                                        {section.isCompleted ? '✅ Completed' : '❌ Not completed'}
+                                                    <span className={completedSectionIds.includes(section._id) ? 'text-green-600' : 'text-red-500'}>
+                                                        {completedSectionIds.includes(section._id) ? '✅ Completed' : '❌ Not completed'}
                                                     </span>
                                                     {section.videoPath && <span>🎥 Video available</span>}
                                                 </div>
@@ -179,12 +195,15 @@ const LectureDetailPage = () => {
                                                     Your browser does not support the video tag.
                                                 </video>
 
-                                                {!section.isCompleted && (
+                                                {!completedSectionIds.includes(section._id) && (
                                                     <div className='flex justify-center'>
                                                         <button
                                                             onClick={async () => {
                                                                 const result = await markSectionCompleted(lecture._id, section._id);
-                                                                if (result) getLectureById(lecture._id); // Refresh lecture to update UI
+                                                                // if (result) getLectureById(lecture._id); // Refresh lecture to update UI
+                                                                if (result) {
+                                                                    setCompletedSectionIds(prev => [...prev, section._id]);
+                                                                }
                                                             }}
                                                             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition cursor-pointer"
                                                         >
