@@ -33,14 +33,6 @@ const lectureSchema = new mongoose.Schema({
         type: Number,
         enum: [1, 2, 3]
     },
-    isCompleted: {
-        type: Boolean,
-        default: false
-    },
-    userProgress: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
 });
 
 export default mongoose.model("Lecture", lectureSchema);

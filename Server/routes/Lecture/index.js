@@ -19,6 +19,7 @@ import {
     getPurchasedLectures,
     getSectionById,
     markSectionCompleted,
+    progressByLectureId,
     updateLecture,
 } from '../../controllers/Lecture/index.js';
 import allow from '../../middlewares/allowTo.js';
@@ -91,6 +92,7 @@ router.get("/level/all", getAllLectures);
 router.patch("/section/complete", verifyToken, markSectionCompleted);
 router.post("/check/completed", verifyToken, checkLectureCompleted);
 router.post("/users/progress", verifyToken, allow("instructor"), getLectureUsersAndProgress);
+router.get("/progress/:lectureId", verifyToken, progressByLectureId);
 
 
 export default router;
