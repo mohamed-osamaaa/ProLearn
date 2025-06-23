@@ -1,5 +1,6 @@
 import Lecture from '../../models/Lecture.js';
 import User from '../../models/User.js';
+import UserLectureProgress from '../../models/UserLectureProgress.js';
 
 export const getLecturesByLevel = async (req, res) => {
     try {
@@ -281,6 +282,7 @@ export const getAllLectures = async (req, res) => {
     }
 };
 
+
 export const markSectionCompleted = async (req, res) => {
     try {
         const { lectureId, sectionId } = req.body;
@@ -296,25 +298,26 @@ export const markSectionCompleted = async (req, res) => {
             return res.status(404).json({ success: false, message: "Section not found" });
         }
 
-        section.isCompleted = true;
+        // Add sectionId to completedSections for this user+lecture
+        const progress = await UserLectureProgress.findOneAndUpdate(
+            { user: userId, lecture: lectureId },
+            { $addToSet: { completedSections: sectionId } },
+            { upsert: true, new: true }
+        );
 
-        const allCompleted = lecture.sections.every(sec => sec.isCompleted);
+        const allSectionIds = lecture.sections.map(sec => sec._id.toString());
+        const completedSet = new Set(progress.completedSections.map(id => id.toString()));
+        const isCompleted = allSectionIds.every(id => completedSet.has(id));
 
-        if (allCompleted) {
-            lecture.isCompleted = true;
-
-            const alreadyAdded = lecture.userProgress.some(id => id.toString() === userId);
-            if (!alreadyAdded) {
-                lecture.userProgress.push(userId);
-            }
+        if (isCompleted && !progress.isCompleted) {
+            progress.isCompleted = true;
+            await progress.save();
         }
-
-        await lecture.save();
 
         res.json({
             success: true,
-            message: `Section marked as completed${allCompleted ? " and Lecture is now completed" : ""}`,
-            lectureStatus: lecture.isCompleted
+            message: `Section marked completed${isCompleted ? ", lecture completed" : ""}`,
+            lectureCompleted: isCompleted
         });
 
     } catch (error) {
@@ -322,19 +325,16 @@ export const markSectionCompleted = async (req, res) => {
     }
 };
 
-
 export const checkLectureCompleted = async (req, res) => {
     try {
         const { lectureId } = req.body;
+        const userId = req.currentUser.id;
 
-        const lecture = await Lecture.findById(lectureId).select("isCompleted");
-        if (!lecture) {
-            return res.status(404).json({ success: false, message: "Lecture not found" });
-        }
+        const progress = await UserLectureProgress.findOne({ user: userId, lecture: lectureId });
 
         res.json({
             success: true,
-            lectureCompleted: lecture.isCompleted
+            lectureCompleted: progress?.isCompleted || false
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -346,26 +346,35 @@ export const getLectureUsersAndProgress = async (req, res) => {
     try {
         const { lectureName } = req.body;
 
-        const lecture = await Lecture.findOne({ name: lectureName }).populate("userProgress", "name email");
-
+        const lecture = await Lecture.findOne({ name: lectureName });
         if (!lecture) {
             return res.status(404).json({ success: false, message: "Lecture not found" });
         }
 
-        const usersPurchased = await User.find({ purchasedLectures: lecture._id }).select("name email");
-
-        const usersCompleted = lecture.userProgress;
+        const [usersPurchased, completedProgress] = await Promise.all([
+            User.find({ purchasedLectures: lecture._id }).select("name email"),
+            UserLectureProgress.find({ lecture: lecture._id, isCompleted: true }).populate("user", "name email")
+        ]);
 
         res.json({
             success: true,
             lectureName: lecture.name,
             purchasedCount: usersPurchased.length,
-            completedCount: usersCompleted.length,
+            completedCount: completedProgress.length,
             usersPurchased,
-            usersCompleted
+            usersCompleted: completedProgress.map(p => p.user)
         });
 
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
+};
+
+
+export const progressByLectureId = async (req, res) => {
+    const userId = req.currentUser.id;
+    const { lectureId } = req.params;
+
+    const progress = await UserLectureProgress.findOne({ user: userId, lecture: lectureId });
+    res.json({ completedSections: progress?.completedSections || [] });
 };
