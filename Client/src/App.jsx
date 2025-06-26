@@ -16,6 +16,9 @@ import LectureDetailPage from './pages/LectureDetailPage';
 import MyCourses from './pages/MyCourses';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import LectureManagement from './components/admin/LectureManagement';
+import Analytics from './components/admin/Analytics';
+import UserProgress from './components/admin/UserProgress';
 
 function App() {
   const { checkAuth } = useAuthStore();
@@ -24,6 +27,18 @@ function App() {
     checkAuth();
   }, []);
 
+  // console.log("Components =>", {
+  //   Home,
+  //   Login,
+  //   NotFound,
+  //   Register,
+  //   Level,
+  //   LectureDetailPage,
+  //   MyCourses,
+  //   AdminDashboard,
+  //   ProtectedRoute
+  // });
+  //error in console log about check auth return undefined (unAuth user)
 
   return (
     <>
@@ -43,9 +58,18 @@ function App() {
         </Route>
 
 
-        <Route element={<ProtectedRoute allowedRoles={['instructor']} />}>
+        {/* <Route element={<ProtectedRoute allowedRoles={['instructor']} />}>
           <Route path="/admin/*" element={<AdminDashboard />} />
-        </Route>
+        </Route> */}
+
+        {/* <Route element={<ProtectedRoute allowedRoles={['instructor']} />}>
+          <Route path="/admin" element={<AdminDashboard />}>
+            <Route index element={<UserProgress />} />
+            <Route path="lectures" element={<LectureManagement />} />
+            <Route path="analytics" element={<Analytics />} />
+          </Route>
+        </Route> */}
+
       </Routes>
     </>
   );
