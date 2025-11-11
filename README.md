@@ -126,5 +126,5 @@ This project is licensed under the MIT License.
 
 ---
 
-Developed with ❤️ by Mohamed Osama and contributors
+Developed with ❤️ by Mohamed Osama
 
